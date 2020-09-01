@@ -34,6 +34,7 @@ ranger = Character("ranger", 2, 14, .4, 25)
 
 enemies = [orc, spider, golem]
 jobs = [fighter, ranger]
+champions = [orc, spider, golem, fighter, ranger]
 
 def fight(c1, c2):
     f1 = c1.name
@@ -43,16 +44,20 @@ def fight(c1, c2):
     print(f"A {f1} and a {f2} square off!")
     print(f"The {f1} attacks first!")
 
-    round = 2
+    round = 0
     victor = None
 
     while c1_health > 0 and c2_health > 0:
 
         strike_result = c1.attack() - c2.armor
         strike_result_2 = c2.attack() - c1.armor
+        dodge_result_1 = c1.dodge()
+        dodge_result_2 = c2.dodge()
 
         if round % 2 == 0:
-            if strike_result >= 0:
+            if dodge_result_2 == True:
+                print(f"The {f1} swings but the {f2} dodges the attack!")
+            elif strike_result >= 0 and dodge_result_2 == False:
                 c2_health -= strike_result
                 print(f"The {f1} hits for {strike_result} damage! ({f2}: {c2_health}/{c2.health})")
                 round += 1
@@ -63,7 +68,9 @@ def fight(c1, c2):
                 round += 1
 
         else:
-            if strike_result_2 >= 0:
+            if dodge_result_1 == True:
+                print(f"The {f2} swings but the {f1} dodges the attack!")
+            elif strike_result_2 >= 0 and dodge_result_1 == False:
                 c1_health -= strike_result_2
                 print(f"The {f2} hits for {strike_result_2} damage! ({f1}: {c1_health}/{c1.health})")
                 round += 1
@@ -78,19 +85,30 @@ def fight(c1, c2):
     else:
         print(f"The {f1} loses the fight. The {f2} is victorious!")
 
-print("""
-      Welcome to the arena!
-      Here you can square off against any number of opponents.
-      But first, pick your champion:
-      - fighter
-      - ranger
-      - orc
-      - spider
-      - golem
-      """)
+def startgame():
+    print("""
+          Welcome to the arena!
+          Here you can square off against any number of opponents.
+          But first, pick your champion:
+          - fighter
+          - ranger
+          - orc
+          - spider
+          - golem
+          """)
 
-champion = input("> ")
-print(f"You chose the {champion}.")
+    choice = input("> ")
+    champion = next((x for x in champions if x.name == choice))
+    print(f"You chose the {choice}.")
 
+    fight(champion, enemies[randint(0,2)])
 
-fight(champion, enemies[randint(0,2)])
+    print("Would you like to fight in the arena again?")
+    replay = input("> ")
+
+    if replay == "yes":
+        startgame()
+    else:
+        print("Bye... for now.")
+
+startgame()
